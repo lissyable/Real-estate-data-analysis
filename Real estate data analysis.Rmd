@@ -1,0 +1,124 @@
+---
+title: "Real estate data analysis"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+#You have just begun an illustrious career in the real estate sector. You're given a large dataset containing #every non-commercial property for sale in the city of Windsor for the past 6 months. It is your job to #create functions to help interpret and make use of this data.
+
+
+#Import the dataset 
+```{r}
+mls_data <- read.csv("mls_13.csv")
+```
+heck the data
+```{r}
+summary(mls_data)
+dim(mls_data)
+str(mls_data)
+```
+Create a function that calculates the average of a set (without using R's mean
+function). It should take an array of numbers as an input, and return the average.
+```{r}
+average <- function(x)
+{
+  ave <- sum(x) / length(x)
+ return(ave)
+  }
+```
+Create a function that calculates Z scores. It should take in a single value, and an
+array of numbers as arguments, and return the Z-score.
+```{r}
+z_score <- function(x, y)
+{
+  z <- (x - average(y)) / sd(y)
+  return(z)
+}
+```
+Clients frequently approach you with the maximum price they're willing to spend
+on a house. With this maximum price, create a function that return an array with 2
+elements; the number of houses available at/below this price, and the portion of
+houses on the market that are at/below this price.
+```{r}
+no_houses <- function(cost)
+{
+  element <- 0
+  element[1] <- sum(mls_data$price <= cost)
+  element[2] <- element[1] / length(mls_data$price)
+  return(element)
+}
+
+no_houses(100000)
+summary(mls_data)
+```
+Create a function that takes in a numeric array and plots it in a histogram, and
+returns 1 if the set is skewed right, and -1 if it is skewed left. Use this function to
+plot and determine the skew of the prices.
+```{r}
+skewness <- function(x)
+{
+  hist(x)
+  skew <- average(x) - median(x)
+  return(sign(skew))
+}
+
+skewness(mls_data$price)
+
+```
+Create a function that has price as an input, and returns the z-score of
+the average number of bath-pieces (denoted 'bathp' in the data set) for houses less
+than or equal to the inputted price. Also make it print a summary for the number of
+bath-pieces for houses at or below the inputted price.
+```{r}
+bath_details <- function(input_price)
+{
+  print(summary(mls_data$bathp[mls_data$price <= input_price]))
+  return(z_score(average(mls_data$bathp[mls_data$price <= input_price]), mls_data$price))
+}
+
+bath_details(85000)
+```
+Create a function that takes and upper price and a lower price as an argument,
+creates a subset of houses that fall into that interval, and returns the head of that
+subset.
+```{r}
+sub_houses <- function(lower,upper)
+{
+  sub <- 0
+  sub <- mls_data[which(mls_data$price >= lower & mls_data$price <= upper),]
+  return(head(sub))
+}
+
+sub_houses(75000,100000)
+```
+Finally, clients are very interested in bath-pieces. Create a function that has an
+input as a number of bath-pieces, and returns a subset of the cheapest house(s) that
+have that number of bath-pieces.
+```{r}
+cheap_houses <- function(bathpieces)
+{
+  bath <- 0
+  bath<- mls_data[which(mls_data$bathp == bathpieces),]
+  bath <- bath[bath$price == min(bath$price),]
+  return(bath)
+}
+
+cheap_houses(4)
+```
+
+
+
+
+
+
+
+
